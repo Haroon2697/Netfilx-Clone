@@ -13,7 +13,7 @@ const Navbar = () => {
         <button className='text-white pr-4 hover:text-gray-300 transition-all duration-300 text-sm md:text-base'>Sign In</button>
         </Link>
         <Link to='/signup'>
-        <button className='text-white bg-red-600 py-1 px-3 rounded-sm cursor-pointer hover:bg-red-800 transition-all duration-300 text-sm md:text-base'>Sign Up</button>
+        <button className='text-white bg-red-600 py-2 px-3 rounded-sm cursor-pointer hover:bg-red-800 transition-all duration-300 text-sm md:text-base'>Sign Up</button>
         </Link>
 </div>
     </div>
