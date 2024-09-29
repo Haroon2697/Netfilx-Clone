@@ -1,41 +1,43 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "../firebase"; 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword ,onAuthStateChanged,sendPasswordResetEmail, signOut } from "firebase/auth";
-
+import { auth, db } from "../firebase"; 
+import { 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    sendPasswordResetEmail, 
+    signOut 
+} from "firebase/auth";
+import { setDoc, doc } from "firebase/firestore";
 
 const AuthContext = createContext();
 
-export function AuthContextProvider ({ children }) {
-
+export function AuthContextProvider({ children }) {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, Currentuser => {
-            setUser(Currentuser);
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
         });
 
-        return unsubscribe;
-    }
-    , []);
+        return () => unsubscribe(); // Ensure the listener is cleaned up
+    }, []);
 
-
-
-    function login(email, password) {
-        return signInWithEmailAndPassword(auth, email, password);
+    async function login(email, password) {
+        return await signInWithEmailAndPassword(auth, email, password);
     }
 
-    function logout() {
-        return signOut(auth);
+    async function logout() {
+        return await signOut(auth);
     }
 
-    function resetPassword(email) {
-        return sendPasswordResetEmail(auth, email);
+    async function resetPassword(email) {
+        return await sendPasswordResetEmail(auth, email);
     }
 
-    function signUp(email, password) {
-        return createUserWithEmailAndPassword(auth, email, password);
+    async function signUp(email, password) {
+        await createUserWithEmailAndPassword(auth, email, password); // Await the promise
+        await setDoc(doc(db, "users", email), { savedShows: [] }); // Await the promise
     }
-
 
     return (
         <AuthContext.Provider value={{ user, login, logout, resetPassword, signUp }}>
@@ -44,6 +46,6 @@ export function AuthContextProvider ({ children }) {
     );
 }
 
-export function useAuth() {
+export function UserAuth() {
     return useContext(AuthContext);
 }
